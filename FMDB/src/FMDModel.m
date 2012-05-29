@@ -180,6 +180,15 @@
 	return [self parseResult:[self select:sql]];
 }
 
++(id)whereOne:(NSString *)query {
+	NSArray *result = [self where:query];
+	
+	if([result count] != 0)
+		return [result objectAtIndex:0];
+	
+	return nil;
+}
+
 +(void)deleteAll {	
 	NSString *sql = [NSString stringWithFormat:@"DELETE FROM %@;", [self tableName]];
 	[self execute:sql];

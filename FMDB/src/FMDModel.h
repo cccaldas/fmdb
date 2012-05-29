@@ -44,6 +44,7 @@
 +(id)first;
 +(id)last;
 +(NSArray *)where:(NSString *)query;
++(id)whereOne:(NSString *)query;
 +(NSArray *)getAll;
 +(uint)getLastId;
 
