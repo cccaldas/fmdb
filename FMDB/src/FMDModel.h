@@ -13,6 +13,12 @@
 #define kColumnTypeText		@"TEXT"
 #define kColumnTypeNumeric	@"NUMERIC"
 #define kColumnTypeInteger	@"INTEGER"
+#define kColumnTypeDate		@"DATE"
+#define kColumnTypeDateTime	@"DATETIME"
+#define kColumnTypeBoolean	@"BOOL"
+
+#define kDateFormat			@"yyyy-MM-dd"
+#define kDateTimeFormat		@"yyyy-MM-dd hh:mm:ss"
 
 @interface FMDModel : NSObject {
 	
@@ -36,8 +42,8 @@
 +(NSDictionary *)tableConfig;
 
 //parse
--(void)databaseToModel:(FMResultSet *)result;
--(NSDictionary *)modelToDatabase;
+-(void)databaseToModel:(FMResultSet *)result config:(NSDictionary *)config;
+-(NSDictionary *)modelToDatabase:(NSDictionary *)config;
 
 //query
 +(id)find:(uint)id;

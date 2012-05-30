@@ -149,7 +149,6 @@
 		6C358616154CE1DD00B6FC56 = {
 			isa = PBXGroup;
 			children = (
-				6C3586F0154CE5DF00B6FC56 /* libsqlite3.dylib */,
 				6C358658154CE30300B6FC56 /* lib */,
 				6C358657154CE25000B6FC56 /* test */,
 				6C358644154CE24800B6FC56 /* src */,
@@ -170,6 +169,7 @@
 		6C358624154CE1DE00B6FC56 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6C3586F0154CE5DF00B6FC56 /* libsqlite3.dylib */,
 				6C358625154CE1DE00B6FC56 /* UIKit.framework */,
 				6C358627154CE1DE00B6FC56 /* Foundation.framework */,
 				6C358629154CE1DE00B6FC56 /* CoreGraphics.framework */,
@@ -493,7 +493,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0430;
-				ORGANIZATIONNAME = "Simbionte Studios";
+				ORGANIZATIONNAME = "Cristiano Coutinho Caldas";
 			};
 			buildConfigurationList = 6C35861B154CE1DD00B6FC56 /* Build configuration list for PBXProject "FMDB" */;
 			compatibilityVersion = "Xcode 3.2";

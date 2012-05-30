@@ -10,9 +10,11 @@
 
 @interface Product : FMDModel
 
-@property (nonatomic, retain) NSString	*name;
-@property (nonatomic, assign) float		price;
-@property (nonatomic, retain) NSString	*description;
-@property (nonatomic, retain) NSDate	*released; 
+@property (nonatomic, retain)	NSString	*name;
+@property (nonatomic, assign)	float		price;
+@property (nonatomic, retain)	NSString	*description;
+@property (nonatomic, retain)	NSDate		*released; 
+@property (nonatomic, retain)	NSDate		*valid; 
+@property (nonatomic)			BOOL		available;
 
 @end
