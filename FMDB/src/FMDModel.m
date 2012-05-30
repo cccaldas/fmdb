@@ -3,10 +3,11 @@
 	FMDB
 	
 	Created by Cristiano Coutinho Caldas on 4/23/12.
-	Copyright (c) 2012 Simbionte Studios. All rights reserved.
+	Copyright (c) 2012 Cristiano Coutinho Caldas. All rights reserved.
 */
 
 #import "FMDModel.h"
+#import "DateUtil.h"
 
 @interface FMDModel()
 +(NSString *)formatColumnToDatabase:(NSString *)column value:(NSString *)value;
@@ -23,8 +24,12 @@
 	NSString *sql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (id INTEGER PRIMARY KEY", [self tableName]];
 	NSDictionary *config = [self tableConfig];
 	
-	for (NSString *key in config)
+	for (NSString *key in config) {
+		if([key isEqualToString:kColumnTypeDate] || [key isEqualToString:kColumnTypeDateTime] || [key isEqualToString:kColumnTypeBoolean])
+			key = kColumnTypeText;
+		
 		sql = [NSString stringWithFormat:@"%@, %@ %@", sql, key, [config objectForKey:key]];
+	}
 	
 	sql = [NSString stringWithFormat:@"%@);", sql];
 	
@@ -32,13 +37,57 @@
 	
 	//NSLog(@"FMDModel::createTable() sql: %@", sql);
 }
-
--(void)databaseToModel:(FMResultSet *)result {
-	
+			
+-(void)databaseToModel:(FMResultSet *)result config:(NSDictionary *)config {	
+	for (NSString *key in config) {
+		NSString *type = [config objectForKey:key];
+		
+		if([type isEqualToString:kColumnTypeText])
+			[self setValue:[result stringForColumn:key] forKey:key];
+		
+		else if([type isEqualToString:kColumnTypeNumeric])
+			[self setValue:[NSNumber numberWithFloat:[[result stringForColumn:key] floatValue]] forKey:key];
+		
+		else if([type isEqualToString:kColumnTypeInteger])
+			[self setValue:[NSNumber numberWithInt:[[result stringForColumn:key] intValue]] forKey:key];
+		
+		else if([type isEqualToString:kColumnTypeDate])
+			[self setValue:[DateUtil dateWithString:[result stringForColumn:key] format:kDateFormat] forKey:key];
+		
+		else if([type isEqualToString:kColumnTypeDateTime])
+			[self setValue:[DateUtil dateWithString:[result stringForColumn:key] format:kDateTimeFormat] forKey:key];
+		
+		else if([type isEqualToString:kColumnTypeBoolean])
+			[self setValue:[NSNumber numberWithInt:[[result stringForColumn:key] intValue]] forKey:key];
+	}
 }
 
--(NSDictionary *)modelToDatabase {
-	return nil;
+-(NSDictionary *)modelToDatabase:(NSDictionary *)config {
+	NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+	
+	for (NSString *key in config) {
+		NSString *type = [config objectForKey:key];
+		
+		if([type isEqualToString:kColumnTypeText])
+			[dict setObject:[self valueForKey:key] forKey:key];
+		
+		else if([type isEqualToString:kColumnTypeNumeric])
+			[dict setObject:[NSString stringWithFormat:@"%@", [self valueForKey:key]] forKey:key];
+		
+		else if([type isEqualToString:kColumnTypeInteger])
+			[dict setObject:[NSString stringWithFormat:@"%d", [self valueForKey:key]] forKey:key];
+		
+		else if([type isEqualToString:kColumnTypeDate])
+			[dict setObject:[DateUtil stringWithDate:[self valueForKey:key] format:kDateFormat] forKey:key];
+		
+		else if([type isEqualToString:kColumnTypeDateTime])
+			[dict setObject:[DateUtil stringWithDate:[self valueForKey:key] format:kDateTimeFormat] forKey:key];
+		
+		else if([type isEqualToString:kColumnTypeBoolean])
+			[dict setObject:[NSString stringWithFormat:@"%@", [self valueForKey:key]] forKey:key];
+	}
+	
+	return dict;
 }
 
 //+(NSString *)DDL		{ return nil; }
@@ -53,7 +102,10 @@
 +(NSString *)formatColumnToDatabase:(NSString *)column value:(NSString *)value {
 	NSString *type = [[self tableConfig] objectForKey:column];
 	
-	if([type isEqualToString:kColumnTypeText])
+	if([type isEqualToString:kColumnTypeText] || 
+	   [type isEqualToString:kColumnTypeDate] || 
+	   [type isEqualToString:kColumnTypeDateTime]
+	)
 		value = [NSString stringWithFormat:@"\"%@\"", value];
 	
 	return value;
@@ -63,7 +115,7 @@
 	//NSLog(@"Evento::save() table: %@", [self TABLE_NAME]);
 	
 	NSString *sql;
-	NSDictionary *data = [model modelToDatabase];
+	NSDictionary *data = [model modelToDatabase:[self tableConfig]];
 	NSDictionary *config = [self tableConfig];
 	
 	if(model.id == 0) { //insert
@@ -133,7 +185,7 @@
 	while([result next]) {
 		FMDModel *model			= [self new];
 		model.id				= [result intForColumn:@"id"];
-		[model databaseToModel:result];
+		[model databaseToModel:result config:[self tableConfig]];
 		
 		[items addObject:model];
 	}
